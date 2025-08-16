@@ -17,7 +17,7 @@ public class Supplier
 
     [ForeignKey(nameof(Person))]
     [Required]
-    public Guid PersonID { get; set; }
+    public Guid PersonContactID { get; set; }
 
     // Navigation properties
     public Person Person { get; set; } = default!;

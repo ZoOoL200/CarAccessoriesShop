@@ -22,22 +22,7 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.HR.Person", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ReferenceType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Persons");
-                });
-
-            modelBuilder.Entity("Market.Domain.Entity.HR.Contact", b =>
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.HR.Contact", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -64,7 +49,7 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                     b.ToTable("Contacts");
                 });
 
-            modelBuilder.Entity("Market.Domain.Entity.HR.CountryKey", b =>
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.HR.CountryKey", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -90,7 +75,49 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                     b.ToTable("CountryKeys");
                 });
 
-            modelBuilder.Entity("Market.Domain.Entity.Main.Branch", b =>
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.HR.Person", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<string>("ReferenceType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Persons");
+                });
+
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.HR.Supplier", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("PersonContactID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SupplierName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PersonContactID")
+                        .IsUnique();
+
+                    b.ToTable("Suppliers");
+                });
+
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.Main.Branch", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -114,31 +141,7 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                     b.ToTable("Branches");
                 });
 
-            modelBuilder.Entity("Market.Domain.Entity.Main.Category", b =>
-                {
-                    b.Property<short>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<short>("Id"));
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Title")
-                        .IsUnique();
-
-                    b.ToTable("Categories");
-                });
-
-            modelBuilder.Entity("Market.Domain.Entity.Main.Inventory", b =>
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.Main.Inventory", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -163,7 +166,7 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                     b.ToTable("Inventories");
                 });
 
-            modelBuilder.Entity("Market.Domain.Entity.Main.Product", b =>
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.Main.Product", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -191,7 +194,7 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("Market.Domain.Entity.Main.ProductStock", b =>
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.Main.ProductStock", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -228,33 +231,7 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Market.Domain.Entity.Management.Supplier", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("PersonID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("SupplierName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PersonID")
-                        .IsUnique();
-
-                    b.ToTable("Suppliers");
-                });
-
-            modelBuilder.Entity("Market.Domain.Entity.Operations.PurchaseDetail", b =>
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.Operations.PurchaseDetail", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -309,7 +286,7 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Market.Domain.Entity.Operations.PurchaseInvoice", b =>
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.Operations.PurchaseInvoice", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -329,7 +306,9 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(18,2)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0.0m);
 
                     b.HasKey("Id");
 
@@ -340,7 +319,7 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                     b.ToTable("PurchaserInvoices");
                 });
 
-            modelBuilder.Entity("Market.Domain.Entity.Operations.SalesDetail", b =>
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.Operations.SalesDetail", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -386,7 +365,7 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Market.Domain.Entity.Operations.SalesInvoice", b =>
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.Operations.SalesInvoice", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -415,7 +394,9 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(18,2)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0.0m);
 
                     b.HasKey("Id");
 
@@ -427,9 +408,33 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                     b.ToTable("SalesInvoices");
                 });
 
-            modelBuilder.Entity("Market.Domain.Entity.HR.Contact", b =>
+            modelBuilder.Entity("MarCarAccessoriesShopket.Domain.Entity.Main.Category", b =>
                 {
-                    b.HasOne("Market.Domain.Entity.HR.CountryKey", "Country")
+                    b.Property<short>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<short>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Title")
+                        .IsUnique();
+
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.HR.Contact", b =>
+                {
+                    b.HasOne("CarAccessoriesShop.Domain.Entity.HR.CountryKey", "Country")
                         .WithMany("Contacts")
                         .HasForeignKey("CountryID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -446,9 +451,20 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                     b.Navigation("person");
                 });
 
-            modelBuilder.Entity("Market.Domain.Entity.Main.Inventory", b =>
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.HR.Supplier", b =>
                 {
-                    b.HasOne("Market.Domain.Entity.Main.Branch", "Branch")
+                    b.HasOne("CarAccessoriesShop.Domain.Entity.HR.Person", "Person")
+                        .WithOne("Supplier")
+                        .HasForeignKey("CarAccessoriesShop.Domain.Entity.HR.Supplier", "PersonContactID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Person");
+                });
+
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.Main.Inventory", b =>
+                {
+                    b.HasOne("CarAccessoriesShop.Domain.Entity.Main.Branch", "Branch")
                         .WithMany("Inventories")
                         .HasForeignKey("BranchID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -457,9 +473,9 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                     b.Navigation("Branch");
                 });
 
-            modelBuilder.Entity("Market.Domain.Entity.Main.Product", b =>
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.Main.Product", b =>
                 {
-                    b.HasOne("Market.Domain.Entity.Main.Category", "Category")
+                    b.HasOne("MarCarAccessoriesShopket.Domain.Entity.Main.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -468,15 +484,15 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("Market.Domain.Entity.Main.ProductStock", b =>
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.Main.ProductStock", b =>
                 {
-                    b.HasOne("Market.Domain.Entity.Main.Inventory", "Inventory")
+                    b.HasOne("CarAccessoriesShop.Domain.Entity.Main.Inventory", "Inventory")
                         .WithMany("ProductStocks")
                         .HasForeignKey("InventoryID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Market.Domain.Entity.Main.Product", "Product")
+                    b.HasOne("CarAccessoriesShop.Domain.Entity.Main.Product", "Product")
                         .WithMany("ProductStocks")
                         .HasForeignKey("ProductID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -487,26 +503,15 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Market.Domain.Entity.Management.Supplier", b =>
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.Operations.PurchaseDetail", b =>
                 {
-                    b.HasOne("CarAccessoriesShop.Domain.Entity.HR.Person", "Person")
-                        .WithOne("Supplier")
-                        .HasForeignKey("Market.Domain.Entity.Management.Supplier", "PersonID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Person");
-                });
-
-            modelBuilder.Entity("Market.Domain.Entity.Operations.PurchaseDetail", b =>
-                {
-                    b.HasOne("Market.Domain.Entity.Main.Product", "Product")
+                    b.HasOne("CarAccessoriesShop.Domain.Entity.Main.Product", "Product")
                         .WithMany("PurchaseDetails")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Market.Domain.Entity.Operations.PurchaseInvoice", "PurchaseInvoice")
+                    b.HasOne("CarAccessoriesShop.Domain.Entity.Operations.PurchaseInvoice", "PurchaseInvoice")
                         .WithMany("PurchaseDetails")
                         .HasForeignKey("PurchaseInvoiceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -517,15 +522,15 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                     b.Navigation("PurchaseInvoice");
                 });
 
-            modelBuilder.Entity("Market.Domain.Entity.Operations.PurchaseInvoice", b =>
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.Operations.PurchaseInvoice", b =>
                 {
-                    b.HasOne("Market.Domain.Entity.Main.Branch", "Branch")
+                    b.HasOne("CarAccessoriesShop.Domain.Entity.Main.Branch", "Branch")
                         .WithMany("PurchaseInvoices")
                         .HasForeignKey("BranchID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Market.Domain.Entity.Management.Supplier", "Supplier")
+                    b.HasOne("CarAccessoriesShop.Domain.Entity.HR.Supplier", "Supplier")
                         .WithMany("PurchaseInvoices")
                         .HasForeignKey("SupplierID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -536,15 +541,15 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                     b.Navigation("Supplier");
                 });
 
-            modelBuilder.Entity("Market.Domain.Entity.Operations.SalesDetail", b =>
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.Operations.SalesDetail", b =>
                 {
-                    b.HasOne("Market.Domain.Entity.Operations.SalesInvoice", "SalesInvoice")
+                    b.HasOne("CarAccessoriesShop.Domain.Entity.Operations.SalesInvoice", "SalesInvoice")
                         .WithMany("SalesDetails")
                         .HasForeignKey("InvoiceID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Market.Domain.Entity.Main.Product", "Product")
+                    b.HasOne("CarAccessoriesShop.Domain.Entity.Main.Product", "Product")
                         .WithMany("SalesDetails")
                         .HasForeignKey("ProductID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -555,15 +560,20 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                     b.Navigation("SalesInvoice");
                 });
 
-            modelBuilder.Entity("Market.Domain.Entity.Operations.SalesInvoice", b =>
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.Operations.SalesInvoice", b =>
                 {
-                    b.HasOne("Market.Domain.Entity.Main.Branch", "Branch")
+                    b.HasOne("CarAccessoriesShop.Domain.Entity.Main.Branch", "Branch")
                         .WithMany("SalesInvoices")
                         .HasForeignKey("BranchID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Branch");
+                });
+
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.HR.CountryKey", b =>
+                {
+                    b.Navigation("Contacts");
                 });
 
             modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.HR.Person", b =>
@@ -574,12 +584,12 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Market.Domain.Entity.HR.CountryKey", b =>
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.HR.Supplier", b =>
                 {
-                    b.Navigation("Contacts");
+                    b.Navigation("PurchaseInvoices");
                 });
 
-            modelBuilder.Entity("Market.Domain.Entity.Main.Branch", b =>
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.Main.Branch", b =>
                 {
                     b.Navigation("Inventories");
 
@@ -588,38 +598,33 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                     b.Navigation("SalesInvoices");
                 });
 
-            modelBuilder.Entity("Market.Domain.Entity.Main.Category", b =>
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.Main.Inventory", b =>
+                {
+                    b.Navigation("ProductStocks");
+                });
+
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.Main.Product", b =>
+                {
+                    b.Navigation("ProductStocks");
+
+                    b.Navigation("PurchaseDetails");
+
+                    b.Navigation("SalesDetails");
+                });
+
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.Operations.PurchaseInvoice", b =>
+                {
+                    b.Navigation("PurchaseDetails");
+                });
+
+            modelBuilder.Entity("CarAccessoriesShop.Domain.Entity.Operations.SalesInvoice", b =>
+                {
+                    b.Navigation("SalesDetails");
+                });
+
+            modelBuilder.Entity("MarCarAccessoriesShopket.Domain.Entity.Main.Category", b =>
                 {
                     b.Navigation("Products");
-                });
-
-            modelBuilder.Entity("Market.Domain.Entity.Main.Inventory", b =>
-                {
-                    b.Navigation("ProductStocks");
-                });
-
-            modelBuilder.Entity("Market.Domain.Entity.Main.Product", b =>
-                {
-                    b.Navigation("ProductStocks");
-
-                    b.Navigation("PurchaseDetails");
-
-                    b.Navigation("SalesDetails");
-                });
-
-            modelBuilder.Entity("Market.Domain.Entity.Management.Supplier", b =>
-                {
-                    b.Navigation("PurchaseInvoices");
-                });
-
-            modelBuilder.Entity("Market.Domain.Entity.Operations.PurchaseInvoice", b =>
-                {
-                    b.Navigation("PurchaseDetails");
-                });
-
-            modelBuilder.Entity("Market.Domain.Entity.Operations.SalesInvoice", b =>
-                {
-                    b.Navigation("SalesDetails");
                 });
 #pragma warning restore 612, 618
         }

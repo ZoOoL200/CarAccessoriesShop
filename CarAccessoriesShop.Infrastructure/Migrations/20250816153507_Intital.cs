@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CarAccessoriesShop.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Intil_Database : Migration
+    public partial class Intital : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -56,7 +56,7 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                 name: "Persons",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     ReferenceType = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -94,7 +94,7 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                     CustomerNmae = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     InvoiceDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
                     EmployeeID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValue: 0.0m)
                 },
                 constraints: table =>
                 {
@@ -161,14 +161,14 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     SupplierName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PersonID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    PersonContactID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Suppliers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Suppliers_Persons_PersonID",
-                        column: x => x.PersonID,
+                        name: "FK_Suppliers_Persons_PersonContactID",
+                        column: x => x.PersonContactID,
                         principalTable: "Persons",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -245,7 +245,7 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                     SupplierID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     BranchID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PurchaseDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValue: 0.0m)
                 },
                 constraints: table =>
                 {
@@ -400,9 +400,9 @@ namespace CarAccessoriesShop.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Suppliers_PersonID",
+                name: "IX_Suppliers_PersonContactID",
                 table: "Suppliers",
-                column: "PersonID",
+                column: "PersonContactID",
                 unique: true);
         }
 

@@ -1,0 +1,5 @@
+1. Make trigger to purchasesDetails to update total on PurchaseInvoices (Done)
+
+2. Make Transaction in update and delete in purchasesDetails on tables  productstocks
+
+3. 1. Make trigger to SalesDetails to update total on SalesInvoices (Done)

@@ -36,6 +36,8 @@ internal class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(
         modelBuilder.Entity<Product>().Property(x => x.Id).HasDefaultValueSql(sql: "NEWID()");
         // Supplier Table Configuration
         modelBuilder.Entity<Supplier>().Property(x => x.Id).HasDefaultValueSql(sql: "NEWID()");
+        // Person Table Configuration
+        modelBuilder.Entity<Person>().Property(x => x.Id).HasDefaultValueSql(sql: "NEWID()");
 
         // PurchaseInvoice Table Configuration
         modelBuilder.Entity<PurchaseInvoice>().Property(x => x.PurchaseDate).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd()

@@ -10,6 +10,8 @@ public class Person
     [Required]
     public string ReferenceType { get; set; } = default!;
 
+    public string PersonName { get; set; } = default!;
+
     // Navigation properties
     public Supplier Supplier { get; set; } = default!;
     public ICollection<Contact> Contact { get; set; } = new List<Contact>();

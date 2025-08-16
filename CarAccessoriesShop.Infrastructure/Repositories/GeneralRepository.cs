@@ -10,6 +10,20 @@ internal class GeneralRepository<T>(AppDbContext dbcontext) : IGeneralRepository
     private readonly DbSet<T> dbset = dbcontext.Set<T>();
 
     //Search for one row by specific column
+    public async Task<T> FindRowBy(
+    Expression<Func<T, bool>> predicate,
+    params Expression<Func<T, object>>[] includes)
+    {
+        IQueryable<T> query = dbset.Where(predicate);
+
+        foreach (var include in includes)
+        {
+            query = query.Include(include);
+        }
+
+        return await query.FirstOrDefaultAsync()
+               ?? throw new InvalidOperationException("No entity found matching the criteria.");
+    }
     public async Task<T> FindRowBy<Tkey>(
      Expression<Func<T, bool>> predicate,
      Expression<Func<T, Tkey>>? orderBy = null,
@@ -33,6 +47,25 @@ internal class GeneralRepository<T>(AppDbContext dbcontext) : IGeneralRepository
     }
 
     // Search for multi-Rows by specific column
+    public async Task<IEnumerable<T>> FindMultiRowsBy(
+    Expression<Func<T, bool>> predicate,
+    params Expression<Func<T, object>>[] includes)
+    {
+        IQueryable<T> query = dbset.Where(predicate);
+
+        // Includes
+        foreach (var include in includes)
+        {
+            query = query.Include(include);
+        }
+
+        var list = await query.ToListAsync();
+
+        if (list is null || !list.Any())
+            throw new InvalidOperationException("No entities found matching the criteria.");
+
+        return list;
+    }
     public async Task<IEnumerable<T>> FindMultiRowsBy<Tkey>(
         Expression<Func<T, bool>> predicate,
         Expression<Func<T, Tkey>>? orderBy = null,

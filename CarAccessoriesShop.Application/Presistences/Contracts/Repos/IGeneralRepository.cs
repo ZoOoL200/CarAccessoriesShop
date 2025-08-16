@@ -5,6 +5,18 @@ namespace CarAccessoriesShop.Application.Presistences.Contracts.Repos;
 public interface IGeneralRepository<T> where T : class
 {
     /// <summary>
+    /// Asynchronously retrieves the first entity that matches the specified predicate,  optionally including related
+    /// entities as specified.
+    /// </summary>
+    /// <param name="predicate">An expression that defines the condition to match. This cannot be <see langword="null"/>.</param>
+    /// <param name="includes">An array of expressions specifying the related entities to include in the query.  This parameter is optional and
+    /// can be empty.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the first  entity that matches the
+    /// predicate, or <see langword="null"/> if no match is found.</returns>
+    public Task<T> FindRowBy(
+    Expression<Func<T, bool>> predicate,
+    params Expression<Func<T, object>>[] includes);
+    /// <summary>
     /// Finds a single row in the data source that matches the specified predicate.
     /// </summary>
     /// <remarks>This method is typically used to retrieve a single entity from a data source, optionally
@@ -21,7 +33,21 @@ public interface IGeneralRepository<T> where T : class
      Expression<Func<T, bool>> predicate,
      Expression<Func<T, Tkey>>? orderBy = null,
      params Expression<Func<T, object>>[] includes);
-
+    /// <summary>
+    /// Asynchronously retrieves a collection of entities that match the specified predicate,  including related
+    /// entities as specified by the include expressions.
+    /// </summary>
+    /// <remarks>This method is typically used to perform filtered queries with optional eager loading of 
+    /// related entities. The <paramref name="includes"/> parameter allows specifying navigation  properties to include
+    /// in the query, enabling efficient data retrieval for complex object graphs.</remarks>
+    /// <param name="predicate">An expression that defines the conditions each entity must satisfy to be included in the result.</param>
+    /// <param name="includes">An array of expressions specifying the related entities to include in the query results.  Each expression should
+    /// indicate a navigation property to include.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains an  <IEnumerable{T}> of entities
+    /// that match the specified predicate. If no entities  match, the result will be an empty collection.</returns>
+    public Task<IEnumerable<T>> FindMultiRowsBy(
+    Expression<Func<T, bool>> predicate,
+    params Expression<Func<T, object>>[] includes);
     /// <summary>
     /// Retrieves multiple rows from the data source that match the specified predicate.
     /// </summary>
