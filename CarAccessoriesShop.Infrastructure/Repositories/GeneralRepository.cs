@@ -1,4 +1,5 @@
-﻿using CarAccessoriesShop.Application.Presistences.Contracts.Repos;
+﻿using CarAccessoriesShop.Application.Exceptions;
+using CarAccessoriesShop.Application.Presistences.Contracts.Repos;
 using CarAccessoriesShop.Infrastucture.Persistence;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -22,7 +23,7 @@ internal class GeneralRepository<T>(AppDbContext dbcontext) : IGeneralRepository
         }
 
         return await query.FirstOrDefaultAsync()
-               ?? throw new InvalidOperationException("No entity found matching the criteria.");
+               ?? throw new NotFoundException("No entity found matching the criteria.");
     }
     public async Task<T> FindRowBy<Tkey>(
      Expression<Func<T, bool>> predicate,
@@ -43,7 +44,7 @@ internal class GeneralRepository<T>(AppDbContext dbcontext) : IGeneralRepository
 
         // return the first or default entity that matches the criteria
         return await query.FirstOrDefaultAsync()
-               ?? throw new InvalidOperationException($"No entity found matching the criteria.");
+               ?? throw new NotFoundException($"No entity found matching the criteria.");
     }
 
     // Search for multi-Rows by specific column
@@ -61,8 +62,8 @@ internal class GeneralRepository<T>(AppDbContext dbcontext) : IGeneralRepository
 
         var list = await query.ToListAsync();
 
-        if (list is null || !list.Any())
-            throw new InvalidOperationException("No entities found matching the criteria.");
+        if (list is null || list.Count == 0)
+            throw new NotFoundException("No entities found matching the criteria.");
 
         return list;
     }
@@ -86,8 +87,8 @@ internal class GeneralRepository<T>(AppDbContext dbcontext) : IGeneralRepository
         var list = await query.ToListAsync();
 
         // Check if the list is null or empty
-        if (list is null || !list.Any())
-            throw new InvalidOperationException($"No entities found matching the criteria.");
+        if (list is null || list.Count ==0)
+            throw new NotFoundException($"No entities found matching the criteria.");
 
         return list;
     }

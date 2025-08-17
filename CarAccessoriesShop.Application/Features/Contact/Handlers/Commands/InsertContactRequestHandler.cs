@@ -1,14 +1,10 @@
 ﻿using AutoMapper;
 using CarAccessoriesShop.Application.DTOs.Contact;
-using CarAccessoriesShop.Application.DTOs.Contact.Validtors;
-using CarAccessoriesShop.Application.Exceptions;
+using CarAccessoriesShop.Application.Features.Contact.Requests.Commands;
 using CarAccessoriesShop.Application.Presistences.UnitofWork;
-using CarAccessoriesShop.Domain.Entity.HR;
-using Market.Application.Features.Contact.Requests.Commands;
 using MediatR;
-using System.ComponentModel.DataAnnotations;
 
-namespace Market.Application.Features.Contact.Handlers.Commands;
+namespace CarAccessoriesShop.Application.Features.Contact.Handlers.Commands;
 /// <summary>
 /// Handles the insertion of a new contact into the system.
 /// </summary>
@@ -21,29 +17,20 @@ public class InsertContactRequestHandler(IUnitofWork unitofWork, IMapper mapper)
 {
     public async Task<RequestContactDto> Handle(InsertContactRequest request, CancellationToken cancellationToken)
     {
-        var validator = new CreatContactValidtor(unitofWork);
-        var validationResult = await validator.ValidateAsync(request.Contact, cancellationToken);
-        if (!validationResult.IsValid)
-        {
-            var allMessages = string.Join(Environment.NewLine, validationResult.Errors.Select(e => e.ErrorMessage));
-            throw new ValidationException(allMessages);
-        }
 
+        // Map the request data to a domain entity
         var contactEntity = mapper.Map<CarAccessoriesShop.Domain.Entity.HR.Contact>(request.Contact);
 
-        try
-        {
-            var country = await unitofWork.CountryKeyRepo.FindRowBy(x => x.Key == request.Contact.Key);
-            contactEntity.CountryID = country.Id;
-            await unitofWork.ContactRepo.AddAsync(contactEntity);
-            await unitofWork.SaveChangesAsync(cancellationToken);
-            var returnedContact = await unitofWork.ContactRepo.FindRowBy(X=>X.Id == contactEntity.Id , x=>x.Country, x=>x.person);
-            return mapper.Map<RequestContactDto>(returnedContact);
-        }
-        catch (Exception ex)
-        {
-            throw new InternalServerErrorException($"Unexpected server error occurred.", ex);
-        }
+        // Attempt to retrieve the country by key and set the CountryID
+        var country = await unitofWork.CountryKeyRepo.FindRowBy(x => x.Key == request.Contact.Key);
+        contactEntity.CountryID = country.Id;
+        // Ateemp to add the contact entity to the repository
+        await unitofWork.ContactRepo.AddAsync(contactEntity);
+        // Save changes to the database
+        await unitofWork.SaveChangesAsync(cancellationToken);
+        // Retrieve the newly created contact entity with related data
+        var returnedContact = await unitofWork.ContactRepo.FindRowBy(X=>X.Id == contactEntity.Id , x=>x.Country, x=>x.Person);
+        return mapper.Map<RequestContactDto>(returnedContact);
 
     }
 }
@@ -60,50 +47,30 @@ public class InsertListContactRequestHandler(IUnitofWork unitofWork, IMapper map
 
     public async Task<List<RequestContactDto>> Handle(InsertListContactRequest request, CancellationToken cancellationToken)
     {
-        var validator = new CreatContactValidtor(unitofWork);
-        var allErrors = new List<string>();
-
-        for (int i = 0; i < request.Contacts.Count; i++)
-        {
-            var contact = request.Contacts[i];
-            var result = await validator.ValidateAsync(contact, cancellationToken);
-
-            if (!result.IsValid)
-            {
-                foreach (var error in result.Errors)
-                {
-                    allErrors.Add($"Contact #{i + 1}: {error.ErrorMessage}");
-                }
-            }
-        }
-        if (allErrors.Count > 0)
-        {
-            string allMessages = string.Join(Environment.NewLine, allErrors);
-            throw new ValidationException(allMessages);
-        }
+        // Create a list to hold the contact entities
         var contactentities = new List<CarAccessoriesShop.Domain.Entity.HR.Contact>();
-        var keys = request.Contacts.Select(x => x.Key).Distinct().ToList();
-        
-        try
-        {
-            var countries = await unitofWork.CountryKeyRepo.FindMultiRowsBy(c => keys.Contains(c.Key));
-            var countriesDic = countries.ToDictionary(c => c.Key, c => c.Id);
-            foreach (var contact in request.Contacts)
-            {
-                var contactEntity = mapper.Map<CarAccessoriesShop.Domain.Entity.HR.Contact>(contact);
-                contactEntity.CountryID = countriesDic[contact.Key!];
-                contactentities.Add(contactEntity);
-            }
-            await unitofWork.ContactRepo.AddAsync(contactentities);
-            await unitofWork.SaveChangesAsync(cancellationToken);
-            var ids = contactentities.Select(c => c.Id).ToList();
-            var returendContact = await unitofWork.ContactRepo.FindMultiRowsBy(x =>  ids.Contains(x.Id), x => x.Country, x => x.person);
-            return mapper.Map<List<RequestContactDto>>(returendContact);
-        }
-        catch (Exception ex)
-        {
-            throw new InternalServerErrorException($"Unexpected server error occurred.", ex);
-        }
 
+        // Get all Keys from the request contacts
+        var keys = request.Contacts.Select(x => x.Key).Distinct().ToList();
+
+        // Gert dictionary of countries based on the keys
+        var countries = await unitofWork.CountryKeyRepo.FindMultiRowsBy(c => keys.Contains(c.Key));
+        var countriesDic = countries.ToDictionary(c => c.Key, c => c.Id);
+
+        // Assign the CountryID to each contact entity based on the provided keys
+        foreach (var contact in request.Contacts)
+        {
+            var contactEntity = mapper.Map<CarAccessoriesShop.Domain.Entity.HR.Contact>(contact);
+            contactEntity.CountryID = countriesDic[contact.Key!];
+            contactentities.Add(contactEntity);
+        }
+        // Add the contact entities to the repository and save changes
+        await unitofWork.ContactRepo.AddAsync(contactentities);
+        await unitofWork.SaveChangesAsync(cancellationToken);
+        // Retrieve the saved contacts with related data and map them to DTOs
+        var ids = contactentities.Select(c => c.Id).ToList();
+        var returendContact = await unitofWork.ContactRepo.FindMultiRowsBy(x =>  ids.Contains(x.Id), x => x.Country, x => x.Person);
+        return mapper.Map<List<RequestContactDto>>(returendContact);
+        
     }
 }

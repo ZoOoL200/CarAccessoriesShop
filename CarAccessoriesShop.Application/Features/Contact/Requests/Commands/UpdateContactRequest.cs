@@ -1,7 +1,7 @@
-﻿using Market.Application.DTOs.Contact;
+﻿using CarAccessoriesShop.Application.DTOs.Contact;
 using MediatR;
 
-namespace Market.Application.Features.Contact.Requests.Commands;
+namespace CarAccessoriesShop.Application.Features.Contact.Requests.Commands;
 
 public record UpdateContactRequest(UpdateContactDto ContactDto): IRequest<RequestContactDto>
 {

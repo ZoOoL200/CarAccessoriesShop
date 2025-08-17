@@ -1,3 +1,4 @@
+using CarAccessoriesShop.Api.MiddelWare;
 using CarAccessoriesShop.Application.Extensions;
 using CarAccessoriesShop.Infrastucture.Extension;
 using CarAccessoriesShop.Infrastucture.Seeders;
@@ -21,6 +22,9 @@ var app = builder.Build();
 var scop = app.Services.CreateScope();
 var service = scop.ServiceProvider;
 await service.GetRequiredService<ICountryKeySeeder>().SeedAsync();
+
+// Configure the middleware to handle exceptions globally
+app.UseMiddleware<MiddelWareException>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

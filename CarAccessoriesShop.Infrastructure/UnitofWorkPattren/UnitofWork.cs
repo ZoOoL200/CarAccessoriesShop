@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 namespace CarAccessoriesShop.Infrastucture.UnitofWorkPattren;
 
 internal class UnitofWork(AppDbContext context, Lazy<IGeneralRepository<Contact>> contactRepo , Lazy<IGeneralRepository<CountryKey>> countryKeyRepo ,
-    Lazy<IGeneralRepository<Supplier>> supplierRepo) : IUnitofWork
+    Lazy<IGeneralRepository<Supplier>> supplierRepo, Lazy<IGeneralRepository<Person>> personRepo) : IUnitofWork
 {
     private IDbContextTransaction? transaction;
 
@@ -15,6 +15,7 @@ internal class UnitofWork(AppDbContext context, Lazy<IGeneralRepository<Contact>
 
 
     // Rrpositories
+    public IGeneralRepository<Person> PersonRepo => personRepo.Value;
     public IGeneralRepository<Contact> ContactRepo => contactRepo.Value;
 
     public IGeneralRepository<CountryKey> CountryKeyRepo => countryKeyRepo.Value;

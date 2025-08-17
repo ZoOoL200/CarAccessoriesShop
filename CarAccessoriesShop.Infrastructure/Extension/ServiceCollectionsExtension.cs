@@ -1,7 +1,9 @@
 ﻿using CarAccessoriesShop.Application.Presistences.Contracts.Repos;
+using CarAccessoriesShop.Application.Presistences.UnitofWork;
 using CarAccessoriesShop.Infrastructure.Repositories;
 using CarAccessoriesShop.Infrastucture.Persistence;
 using CarAccessoriesShop.Infrastucture.Seeders;
+using CarAccessoriesShop.Infrastucture.UnitofWorkPattren;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,14 +19,13 @@ public static class ServiceCollectionsExtension
             options.UseSqlServer(configuration.GetConnectionString("localConnection")));
 
         // Add the Unit of Work and Lazy Resolver
-        //services.AddScoped<IUnitofWork, UnitofWork>();
+        services.AddScoped<IUnitofWork, UnitofWork>();
         services.AddScoped(typeof(Lazy<>), typeof(LazyResolver<>));
 
         // 
         services.AddScoped(typeof(IGeneralRepository<>), typeof(GeneralRepository<>));
-        //services.AddScoped<IContactRepo, ContactRepo>();
+
         // Register other services, repositories, etc.
-        // Example: services.AddScoped<IYourRepository, YourRepository>();
         services.AddScoped<ICountryKeySeeder, CountryKeySeeder>();
     }
 }

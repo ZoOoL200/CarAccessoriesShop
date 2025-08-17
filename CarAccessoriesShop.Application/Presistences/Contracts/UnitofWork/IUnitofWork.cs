@@ -12,6 +12,10 @@ namespace CarAccessoriesShop.Application.Presistences.UnitofWork;
 public interface IUnitofWork : IDisposable
 {
     /// <summary>
+    /// Gets the repository used for managing Person data.
+    /// </summary>
+    public IGeneralRepository<Person> PersonRepo { get; }
+    /// <summary>
     /// Gets the repository used for managing contact data.
     /// </summary>
     public IGeneralRepository<Contact> ContactRepo { get; }

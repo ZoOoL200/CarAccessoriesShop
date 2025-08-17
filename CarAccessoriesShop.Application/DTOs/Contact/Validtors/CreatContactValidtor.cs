@@ -11,11 +11,13 @@ internal class CreatContactValidtor: AbstractValidator<CreatContactDto>
     {
         unitofWork = _unitofWork;
 
+        // Validate the Telephone
         RuleFor(c => c.Telephone)
             .NotEmpty().WithMessage("Telephone Number is required.")
             .Matches(@"^[0-9\-]+$").WithMessage("{PropertyName} must be just numbers.")
             .MaximumLength(15);
-        
+
+        // Validate the Key
         RuleFor(c => c.Key)
             .NotEmpty().WithMessage(" {PropertyName} is required.")
             .MaximumLength(8)
@@ -32,11 +34,13 @@ internal class CreatContactValidtor: AbstractValidator<CreatContactDto>
 
             }).WithMessage("{PropertyName} Is not Exists");
 
+        // Validate the PersonID
         RuleFor(c => c.PersonID)
-            .NotEmpty().WithMessage("{PropertyName} is required.");
-            //.MustAsync(async (id, token) =>
-            //{
-            //    return await unitofWork.SupplierRepo.IsExistsAsync(id);
-            //}).WithMessage("{PropertyName} is not exists");
+            .NotEmpty().WithMessage("{PropertyName} is required.")
+            .MustAsync(async (id, token) =>
+            {
+                return await unitofWork.PersonRepo.IsExistsAsync(id);
+
+            }).WithMessage("{PropertyName} is not exists");
     }
 }

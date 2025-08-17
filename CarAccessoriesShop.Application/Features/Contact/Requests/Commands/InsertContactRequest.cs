@@ -1,7 +1,7 @@
 ﻿using CarAccessoriesShop.Application.DTOs.Contact;
 using MediatR;
 
-namespace Market.Application.Features.Contact.Requests.Commands;
+namespace CarAccessoriesShop.Application.Features.Contact.Requests.Commands;
 
 public record InsertContactRequest(CreatContactDto Contact) : IRequest<RequestContactDto>
 {

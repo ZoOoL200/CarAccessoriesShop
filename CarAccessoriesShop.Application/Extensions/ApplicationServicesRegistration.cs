@@ -1,4 +1,7 @@
-﻿using MediatR;
+﻿using CarAccessoriesShop.Application.Behaviors;
+using CarAccessoriesShop.Application.DTOs.Contact.Validtors;
+using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -11,6 +14,11 @@ public static class ApplicationServicesRegistration
         // Register application services here
         services.AddAutoMapper(Assembly.GetExecutingAssembly());
         services.AddMediatR(Assembly.GetExecutingAssembly());
+
+        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionHandlingBehavior<,>));
         // Example: services.AddScoped<IMyService, MyService>();
         // Return the service provider
         return services;

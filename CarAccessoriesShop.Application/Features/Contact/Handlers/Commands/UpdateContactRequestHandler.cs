@@ -1,41 +1,35 @@
 ﻿using AutoMapper;
-using Market.Application.DTOs.Contact;
-using Market.Application.DTOs.Contact.Validtors;
-using Market.Application.Exceptions;
-using Market.Application.Features.Contact.Requests.Commands;
-using Market.Application.Presistences.UnitofWork;
-using Market.Domain.Entity.HR;
+using CarAccessoriesShop.Application.DTOs.Contact;
+using CarAccessoriesShop.Application.DTOs.Contact.Validtors;
+using CarAccessoriesShop.Application.Exceptions;
+using CarAccessoriesShop.Application.Features.Contact.Requests.Commands;
+using CarAccessoriesShop.Application.Presistences.UnitofWork;
 using MediatR;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
-namespace Market.Application.Features.Contact.Handlers.Commands;
+namespace CarAccessoriesShop.Application.Features.Contact.Handlers.Commands;
 
 public class UpdateContactRequestHandler(IUnitofWork unitofWork, IMapper mapper) : IRequestHandler<UpdateContactRequest, RequestContactDto>
 {
      public async Task<RequestContactDto> Handle(UpdateContactRequest request, CancellationToken cancellationToken)
-    {
-        // Validate the contact data before proceeding with the update
-        var validator = new UpdateContactVaildtor(unitofWork);
-        var validationResult = await validator.ValidateAsync(request.ContactDto, cancellationToken);
-        if (!validationResult.IsValid)
-        {
-            var allMessages = string.Join(Environment.NewLine, validationResult.Errors.Select(e => e.ErrorMessage));
-            throw new ValidationException(allMessages);
-        }
-        var contactEntity = mapper.Map<Domain.Entity.HR.Contact>(request.ContactDto);
+     {
+
+        // Map the request data to a domain entity
+        var contactEntity = mapper.Map<CarAccessoriesShop.Domain.Entity.HR.Contact>(request.ContactDto);
+
+        // Attempt to retrieve the country by key and set the CountryID
+        var country = await unitofWork.CountryKeyRepo.FindRowBy(x => x.Key == request.ContactDto.Key);
+        contactEntity.CountryID = country.Id;
 
         // Attempt to retrieve the existing contact by ID and update it
-        try
-        {
-            var contact = await unitofWork.ContactRepo.GetByIdAsync(contactEntity.Id);
-            mapper.Map(contactEntity, contact);
-            await unitofWork.SaveChangesAsync(cancellationToken);
-            return mapper.Map<RequestContactDto>(contactEntity);
-        }
-        catch (Exception ex)
-        {
-            throw new InternalServerErrorException($"Unexpected server error occurred.{ex}");
-        }
+        var contact = await unitofWork.ContactRepo.GetByIdAsync(contactEntity.Id);
+        mapper.Map(contactEntity, contact);
+        await unitofWork.SaveChangesAsync(cancellationToken);
+
+        // Retrieve the updated contact entity with related data
+        var returnedContact = await unitofWork.ContactRepo.FindRowBy(X => X.Id == contactEntity.Id, x => x.Country, x => x.Person);
+        return mapper.Map<RequestContactDto>(returnedContact);
     }
 }
 
@@ -44,50 +38,27 @@ public class UpdateListContactRequestHandler(IUnitofWork unitofWork, IMapper map
 
     public async Task<List<RequestContactDto>> Handle(UpdateListContactRequest request, CancellationToken cancellationToken)
     {
-        // Validate each contact in the list
-        var validator = new UpdateContactVaildtor(unitofWork);
-        var allErrors = new List<string>();
+        // Create a list to hold the contact entities
+        var keys = request.Contacts.Select(x => x.Key).Distinct().ToList();
 
-        for (int i = 0; i < request.Contacts.Count; i++)
+        // Gert dictionary of countries based on the keys
+        var countries = await unitofWork.CountryKeyRepo.FindMultiRowsBy(c => keys.Contains(c.Key));
+        var countriesDic = countries.ToDictionary(c => c.Key, c => c.Id);
+
+        // Update each contact entity with the corresponding CountryID
+        foreach (var contact in request.Contacts)
         {
-            var contact = request.Contacts[i];
-            var result = await validator.ValidateAsync(contact, cancellationToken);
+            var contactEntity = mapper.Map<Domain.Entity.HR.Contact>(contact);
+            contactEntity.CountryID = countriesDic[contact.Key!];
+            var existingContact = await unitofWork.ContactRepo.GetByIdAsync(contactEntity.Id );
 
-            if (!result.IsValid)
-            {
-                foreach (var error in result.Errors)
-                {
-                    allErrors.Add($"Contact #{i + 1}: {error.ErrorMessage}");
-                }
-            }
+            mapper.Map(contactEntity, existingContact);
         }
-        if (allErrors.Count > 0)
-        {
-            string allMessages = string.Join(Environment.NewLine, allErrors);
-            throw new ValidationException(allMessages);
-        }
-
-        // If validation passes, proceed with the update
-        try
-        {
-            foreach (var contact in request.Contacts)
-            {
-                var contactEntity = mapper.Map<Domain.Entity.HR.Contact>(contact);
-                var existingContact = await unitofWork.ContactRepo.GetByIdAsync(contactEntity.Id );
-
-                mapper.Map(contactEntity, existingContact);
-
-            }
-            await unitofWork.SaveChangesAsync(cancellationToken);
-            var ids = request.Contacts.Select(c => c.Id).ToList();
-            var Contacts = await unitofWork.ContactRepo.GetFullSpecificContactsByIdAsync(ids);
-            return Contacts;
-            
-        }
-        catch (Exception ex)
-        {
-            throw new InternalServerErrorException($"Unexpected server error occurred.{ex}");
-        }
+        // Save changes to the database
+        await unitofWork.SaveChangesAsync(cancellationToken);
+        var ids = request.Contacts.Select(c => c.Id).ToList();
+        var returendContact = await unitofWork.ContactRepo.FindMultiRowsBy(x => ids.Contains(x.Id), x => x.Country, x => x.Person);
+        return mapper.Map<List<RequestContactDto>>(returendContact);
 
     }
 }
