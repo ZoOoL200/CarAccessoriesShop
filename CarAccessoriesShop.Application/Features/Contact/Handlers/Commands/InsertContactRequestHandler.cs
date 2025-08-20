@@ -22,16 +22,19 @@ public class InsertContactRequestHandler(IUnitofWork unitofWork, IMapper mapper)
         var contactEntity = mapper.Map<CarAccessoriesShop.Domain.Entity.HR.Contact>(request.Contact);
 
         // Attempt to retrieve the country by key and set the CountryID
-        var country = await unitofWork.CountryKeyRepo.FindRowBy(x => x.Key == request.Contact.Key);
+        var country = await unitofWork.CountryKeyRepo.FindRowBy(x => x.Key == request.Contact.Key) 
+            ?? throw new KeyNotFoundException($"Didn't find key {request.Contact.Key}");
+
         contactEntity.CountryID = country.Id;
         // Ateemp to add the contact entity to the repository
         await unitofWork.ContactRepo.AddAsync(contactEntity);
+
         // Save changes to the database
         await unitofWork.SaveChangesAsync(cancellationToken);
+
         // Retrieve the newly created contact entity with related data
         var returnedContact = await unitofWork.ContactRepo.FindRowBy(X=>X.Id == contactEntity.Id , x=>x.Country, x=>x.Person);
         return mapper.Map<ShowContactDto>(returnedContact);
-
     }
 }
 /// <summary>
@@ -61,7 +64,11 @@ public class InsertListContactRequestHandler(IUnitofWork unitofWork, IMapper map
         foreach (var contact in request.Contacts)
         {
             var contactEntity = mapper.Map<CarAccessoriesShop.Domain.Entity.HR.Contact>(contact);
-            contactEntity.CountryID = countriesDic[contact.Key!];
+            if(!countriesDic.TryGetValue(contact.Key!, out var countryId))
+            {
+                throw new KeyNotFoundException($"Country with key {contact.Key} not found.");
+            }
+            contactEntity.CountryID = countryId;
             contactentities.Add(contactEntity);
         }
         // Add the contact entities to the repository and save changes
@@ -71,6 +78,5 @@ public class InsertListContactRequestHandler(IUnitofWork unitofWork, IMapper map
         var ids = contactentities.Select(c => c.Id).ToList();
         var returendContact = await unitofWork.ContactRepo.FindMultiRowsBy(x =>  ids.Contains(x.Id), x => x.Country, x => x.Person);
         return mapper.Map<List<ShowContactDto>>(returendContact);
-        
     }
 }

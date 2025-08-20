@@ -11,6 +11,7 @@ internal class CreateSupplierRequestHandler(IUnitofWork unitofWork, IMapper mapp
 {
     public async Task<SupplierDto> Handle(CreateSupplierRequest request, CancellationToken cancellationToken)
     {
+        // Start a new transaction
         await unitofWork.BeginTransactionAsync(cancellationToken);
         try
         {
@@ -28,11 +29,10 @@ internal class CreateSupplierRequestHandler(IUnitofWork unitofWork, IMapper mapp
             supplire.PersonContactID = PersonContact.Id;
             await unitofWork.SupplierRepo.AddAsync(supplire);
             await unitofWork.SaveChangesAsync(cancellationToken);
-            var supplierDto = mapper.Map<SupplierDto>(supplire);
 
             // Commit the transaction
             await unitofWork.CommitTransactionAsync(cancellationToken);
-            return supplierDto;
+            return mapper.Map<SupplierDto>(supplire);
         }
         catch (Exception)
         {

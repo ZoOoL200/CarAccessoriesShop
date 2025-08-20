@@ -33,7 +33,7 @@ public class ContactController(IMediator mediator) : ControllerBase
 
 
     // Update an existing contact
-    [HttpPut]
+    [HttpPatch]
     [Route("UpdateContact")]
     public async Task<IActionResult> UpdateContact([FromBody] UpdateContactDto request)
     {
@@ -42,7 +42,7 @@ public class ContactController(IMediator mediator) : ControllerBase
     }
 
     // Update a list of contacts
-    [HttpPut]
+    [HttpPatch]
     [Route("UpdateListContact")]
     public async Task<IActionResult> UpdateListContact([FromBody] IList<UpdateContactDto> request)
     {

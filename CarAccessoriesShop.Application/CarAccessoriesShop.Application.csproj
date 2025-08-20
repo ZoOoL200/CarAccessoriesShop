@@ -16,9 +16,4 @@
     <ProjectReference Include="..\CarAccessoriesShop.Domain\CarAccessoriesShop.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\Supplier\Handlers\Queries\" />
-    <Folder Include="Features\Supplier\Requests\Queries\" />
-  </ItemGroup>
-
 </Project>

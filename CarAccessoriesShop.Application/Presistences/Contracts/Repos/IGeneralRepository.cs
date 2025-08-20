@@ -13,7 +13,7 @@ public interface IGeneralRepository<T> where T : class
     /// can be empty.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the first  entity that matches the
     /// predicate, or <see langword="null"/> if no match is found.</returns>
-    public Task<T> FindRowBy(
+    public Task<T?> FindRowBy(
     Expression<Func<T, bool>> predicate,
     params Expression<Func<T, object>>[] includes);
     /// <summary>
@@ -29,7 +29,7 @@ public interface IGeneralRepository<T> where T : class
     /// eagerly load related data.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the first row that matches the
     /// predicate, or <see langword="null"/> if no match is found.</returns>
-    public Task<T> FindRowBy<Tkey>(
+    public Task<T?> FindRowBy<Tkey>(
      Expression<Func<T, bool>> predicate,
      Expression<Func<T, Tkey>>? orderBy = null,
      params Expression<Func<T, object>>[] includes);

@@ -10,15 +10,20 @@ namespace CarAccessoriesShop.Application.Features.Supplier.Handlers.Commands
     {
         public async Task<SupplierDto> Handle(UpdateSupplierRequest request, CancellationToken cancellationToken)
         {
+            // Validate the request
             await unitofWork.BeginTransactionAsync(cancellationToken);
             try 
             {
-                var existingSupplier = await unitofWork.SupplierRepo.GetByIdAsync(request.Supplier.Id);
-                if( request.Supplier.SupplierName != existingSupplier!.SupplierName)
+                var existingSupplier = await unitofWork.SupplierRepo.GetByIdAsync(request.Supplier.Id)
+                    ?? throw new KeyNotFoundException($"Supplier with ID {request.Supplier.Id} not found.");
+
+                // Check if the SupplierName has changed
+                if ( request.Supplier.SupplierName != existingSupplier!.SupplierName)
                 {
                     // Update the Person entity if the SupplierName has changed
                     var person = await unitofWork.PersonRepo.GetByIdAsync(existingSupplier.PersonContactID)
                         ?? throw new KeyNotFoundException($"Person Contact with ID {existingSupplier.PersonContactID} not found.");
+
                     person.PersonName = request.Supplier.SupplierName;
                 }
                 // Update the Supplier entity

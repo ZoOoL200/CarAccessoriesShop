@@ -11,7 +11,7 @@ internal class GeneralRepository<T>(AppDbContext dbcontext) : IGeneralRepository
     private readonly DbSet<T> dbset = dbcontext.Set<T>();
 
     //Search for one row by specific column
-    public async Task<T> FindRowBy(
+    public async Task<T?> FindRowBy(
     Expression<Func<T, bool>> predicate,
     params Expression<Func<T, object>>[] includes)
     {
@@ -22,10 +22,9 @@ internal class GeneralRepository<T>(AppDbContext dbcontext) : IGeneralRepository
             query = query.Include(include);
         }
 
-        return await query.FirstOrDefaultAsync()
-               ?? throw new NotFoundException("No entity found matching the criteria.");
+        return await query.FirstOrDefaultAsync();
     }
-    public async Task<T> FindRowBy<Tkey>(
+    public async Task<T?> FindRowBy<Tkey>(
      Expression<Func<T, bool>> predicate,
      Expression<Func<T, Tkey>>? orderBy = null,
      params Expression<Func<T, object>>[] includes)
@@ -43,8 +42,7 @@ internal class GeneralRepository<T>(AppDbContext dbcontext) : IGeneralRepository
             query = query.OrderBy(orderBy);
 
         // return the first or default entity that matches the criteria
-        return await query.FirstOrDefaultAsync()
-               ?? throw new NotFoundException($"No entity found matching the criteria.");
+        return await query.FirstOrDefaultAsync();
     }
 
     // Search for multi-Rows by specific column
@@ -61,9 +59,6 @@ internal class GeneralRepository<T>(AppDbContext dbcontext) : IGeneralRepository
         }
 
         var list = await query.ToListAsync();
-
-        if (list is null || list.Count == 0)
-            throw new NotFoundException("No entities found matching the criteria.");
 
         return list;
     }
@@ -85,10 +80,6 @@ internal class GeneralRepository<T>(AppDbContext dbcontext) : IGeneralRepository
             query = query.OrderBy(orderBy);
 
         var list = await query.ToListAsync();
-
-        // Check if the list is null or empty
-        if (list is null || list.Count ==0)
-            throw new NotFoundException($"No entities found matching the criteria.");
 
         return list;
     }

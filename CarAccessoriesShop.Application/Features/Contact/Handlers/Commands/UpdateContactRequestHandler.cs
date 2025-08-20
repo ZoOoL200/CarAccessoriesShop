@@ -21,7 +21,7 @@ public class UpdateContactRequestHandler(IUnitofWork unitofWork, IMapper mapper)
         var country = await unitofWork.CountryKeyRepo.FindRowBy(x => x.Key == request.ContactDto.Key)
             ?? throw new NotFoundException(nameof(CountryKey), request.ContactDto.Key);
 
-        contact!.CountryID = country.Id;
+        contact.CountryID = country.Id;
 
         // Map the request DTO to the contact entity
         mapper.Map(request.ContactDto, contact);

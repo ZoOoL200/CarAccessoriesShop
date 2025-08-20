@@ -21,5 +21,5 @@ public class Supplier
 
     // Navigation properties
     public Person Person { get; set; } = default!;
-    public ICollection<PurchaseInvoice> PurchaseInvoices { get; set; } = new List<PurchaseInvoice>();
+    public ICollection<PurchaseInvoice> PurchaseInvoices { get; set; } = [];
 }

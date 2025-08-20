@@ -9,7 +9,7 @@ internal class ContactProfile : Profile
 {
     public ContactProfile()
     {
-        // Map from Contact to RequestContactDto
+        // Map from Contact to ShowContactDto
         CreateMap<Contact, ShowContactDto>()
             .ForMember(dest => dest.PersonName, opt => opt.MapFrom(src => src.Person.PersonName))
             .ForMember(dest => dest.CountryName, opt => opt.MapFrom(src => src.Country.CountryName))

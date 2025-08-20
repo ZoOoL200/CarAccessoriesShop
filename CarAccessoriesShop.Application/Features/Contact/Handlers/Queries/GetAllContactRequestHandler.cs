@@ -11,7 +11,15 @@ internal class GetAllContactRequestHandler(IUnitofWork unitofWork, IMapper mappe
     async Task<IEnumerable<ShowContactDto>> IRequestHandler<GetAllContactRequest, IEnumerable<ShowContactDto>>.Handle(GetAllContactRequest request, CancellationToken cancellationToken)
     {
         var contacts = await unitofWork.ContactRepo.GetAllAsync(x=> x.Id, x=>x.Country, x=>x.Person);
-        return   mapper.Map<IEnumerable<ShowContactDto>>(contacts);
+        if (contacts != null)
+        {
+            return mapper.Map<IEnumerable<ShowContactDto>>(contacts);
+        }
+        else
+        {
+            return [];
+        }
+        
     }
 }
 
