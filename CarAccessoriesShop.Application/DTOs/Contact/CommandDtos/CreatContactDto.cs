@@ -1,5 +1,4 @@
-﻿
-namespace CarAccessoriesShop.Application.DTOs.Contact;
+﻿namespace CarAccessoriesShop.Application.DTOs.Contact.CommandDtos;
 
 public class CreatContactDto 
 {

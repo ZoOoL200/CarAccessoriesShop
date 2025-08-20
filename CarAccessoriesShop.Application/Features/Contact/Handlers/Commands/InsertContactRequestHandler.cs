@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CarAccessoriesShop.Application.DTOs.Contact;
+using CarAccessoriesShop.Application.DTOs.Contact.QueryDtos;
 using CarAccessoriesShop.Application.Features.Contact.Requests.Commands;
 using CarAccessoriesShop.Application.Presistences.UnitofWork;
 using MediatR;
@@ -13,9 +13,9 @@ namespace CarAccessoriesShop.Application.Features.Contact.Handlers.Commands;
 /// a DTO representing the newly created contact.</remarks>
 /// <param name="unitofWork">The unit of work used to manage database operations. Cannot be null.</param>
 /// <param name="mapper">The mapper used to convert between request, domain, and DTO objects. Cannot be null.</param>
-public class InsertContactRequestHandler(IUnitofWork unitofWork, IMapper mapper) : IRequestHandler<InsertContactRequest, RequestContactDto>
+public class InsertContactRequestHandler(IUnitofWork unitofWork, IMapper mapper) : IRequestHandler<InsertContactRequest, ShowContactDto>
 {
-    public async Task<RequestContactDto> Handle(InsertContactRequest request, CancellationToken cancellationToken)
+    public async Task<ShowContactDto> Handle(InsertContactRequest request, CancellationToken cancellationToken)
     {
 
         // Map the request data to a domain entity
@@ -30,7 +30,7 @@ public class InsertContactRequestHandler(IUnitofWork unitofWork, IMapper mapper)
         await unitofWork.SaveChangesAsync(cancellationToken);
         // Retrieve the newly created contact entity with related data
         var returnedContact = await unitofWork.ContactRepo.FindRowBy(X=>X.Id == contactEntity.Id , x=>x.Country, x=>x.Person);
-        return mapper.Map<RequestContactDto>(returnedContact);
+        return mapper.Map<ShowContactDto>(returnedContact);
 
     }
 }
@@ -42,10 +42,10 @@ public class InsertContactRequestHandler(IUnitofWork unitofWork, IMapper mapper)
 /// response.</remarks>
 /// <param name="unitofWork"></param>
 /// <param name="mapper"></param>
-public class InsertListContactRequestHandler(IUnitofWork unitofWork, IMapper mapper) : IRequestHandler<InsertListContactRequest, List<RequestContactDto>>
+public class InsertListContactRequestHandler(IUnitofWork unitofWork, IMapper mapper) : IRequestHandler<InsertListContactRequest, List<ShowContactDto>>
 {
 
-    public async Task<List<RequestContactDto>> Handle(InsertListContactRequest request, CancellationToken cancellationToken)
+    public async Task<List<ShowContactDto>> Handle(InsertListContactRequest request, CancellationToken cancellationToken)
     {
         // Create a list to hold the contact entities
         var contactentities = new List<CarAccessoriesShop.Domain.Entity.HR.Contact>();
@@ -70,7 +70,7 @@ public class InsertListContactRequestHandler(IUnitofWork unitofWork, IMapper map
         // Retrieve the saved contacts with related data and map them to DTOs
         var ids = contactentities.Select(c => c.Id).ToList();
         var returendContact = await unitofWork.ContactRepo.FindMultiRowsBy(x =>  ids.Contains(x.Id), x => x.Country, x => x.Person);
-        return mapper.Map<List<RequestContactDto>>(returendContact);
+        return mapper.Map<List<ShowContactDto>>(returendContact);
         
     }
 }

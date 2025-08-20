@@ -1,9 +1,10 @@
-﻿using CarAccessoriesShop.Application.DTOs.Contact;
+﻿using CarAccessoriesShop.Application.DTOs.Contact.CommandDtos;
 using CarAccessoriesShop.Application.Features.Contact.Requests.Commands;
+using CarAccessoriesShop.Application.Features.Contact.Requests.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CarAccessoriesShop.Api.Controllers.Contacts;
+namespace CarAccessoriesShop.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -39,12 +40,31 @@ public class ContactController(IMediator mediator) : ControllerBase
         var result = await mediator.Send(new UpdateContactRequest(request));
         return Ok(result);
     }
+
     // Update a list of contacts
     [HttpPut]
     [Route("UpdateListContact")]
     public async Task<IActionResult> UpdateListContact([FromBody] IList<UpdateContactDto> request)
     {
         var result = await mediator.Send(new UpdateListContactRequest(request));
+        return Ok(result);
+    }
+
+    //Get all contacts
+    [HttpGet]
+    [Route("GetAllContact")]
+    public async Task<IActionResult> GetAllContact()
+    {
+        var result = await mediator.Send(new GetAllContactRequest());
+        return Ok(result);
+    }
+
+    // Get Contacts For Person
+    [HttpGet]
+    [Route("GetPersonContacts/{personId}")]
+    public async Task<IActionResult> GetPersonContacts(Guid personId)
+    {
+        var result = await mediator.Send(new FindPersonContactsRequest(personId));
         return Ok(result);
     }
 }

@@ -104,6 +104,20 @@ internal class GeneralRepository<T>(AppDbContext dbcontext) : IGeneralRepository
 
         return await query.ToListAsync();
     }
+    public async Task<IEnumerable<T>> GetAllAsync<Tkey>(Expression<Func<T, Tkey>>? orderBy = null , params Expression<Func<T, object>>[] includes)
+
+    {
+        var query = dbset.AsNoTracking().AsQueryable();
+        foreach (var include in includes)
+        {
+            query = query.Include(include);
+        }
+
+        if (orderBy != null)
+            query = query.OrderBy(orderBy);
+
+        return await query.ToListAsync();
+    }
 
     // retrieves an entity by its unique identifier asynchronously.
     public async Task<T?> GetByIdAsync<Tkey>(Tkey id) => await dbset.FindAsync(id);

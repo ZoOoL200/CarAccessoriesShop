@@ -1,6 +1,6 @@
-﻿namespace CarAccessoriesShop.Application.DTOs.Contact;
+﻿namespace CarAccessoriesShop.Application.DTOs.Contact.QueryDtos;
 
-public class PersonPhoneViewDto
+public class ShowPersonContactDto
 {
     public string CountryName { get; set; } = default!;
     public string Key { get; set; } = default!;

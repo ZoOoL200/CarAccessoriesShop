@@ -1,7 +1,6 @@
-﻿
-namespace CarAccessoriesShop.Application.DTOs.Contact;
+﻿namespace CarAccessoriesShop.Application.DTOs.Contact.QueryDtos;
 
-public class RequestContactDto 
+public class ShowContactDto 
 {
     public long Id { get; set; } 
     public string PersonName { get; set; } = default!;

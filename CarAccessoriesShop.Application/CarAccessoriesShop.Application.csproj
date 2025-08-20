@@ -17,8 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Contact\Handlers\Queries\" />
-    <Folder Include="Features\Contact\Requests\Queries\" />
+    <Folder Include="Features\Supplier\Handlers\Queries\" />
+    <Folder Include="Features\Supplier\Requests\Queries\" />
   </ItemGroup>
 
 </Project>

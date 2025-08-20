@@ -78,6 +78,20 @@ public interface IGeneralRepository<T> where T : class
     public Task<IEnumerable<T>> GetAllAsync<Tkey>(Expression<Func<T, Tkey>>? orderBy = null);
 
     /// <summary>
+    ///  Asynchronously retrieves all entities of type <typeparamref name="T"/> from the data source.
+    /// </summary>
+    /// <remarks>This method retrieves all entities from the data source and optionally orders them  based on
+    /// the provided <paramref name="orderBy"/> expression and includes the relations in <paramref name="includes"/> experssion.
+    /// The operation is  asynchronous and does not block the calling thread.</remarks>
+    /// <typeparam name="Tkey">The type of the key used for ordering the entities.</typeparam>
+    /// <param name="orderBy">>An optional expression specifying the property by which to order the entities.  If <see langword="null"/>, the
+    /// entities are returned in their default order.</param>
+    /// <param name="includes">Relations with entity <typeparamref name="T"/>.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains an  <see cref="IEnumerable{T}"/> of
+    /// all entities of type <typeparamref name="T"/></returns>
+    public Task<IEnumerable<T>> GetAllAsync<Tkey>(Expression<Func<T, Tkey>>? orderBy = null, params Expression<Func<T, object>>[] includes);
+
+    /// <summary>
     /// Retrieves an entity of type <typeparamref name="T"/> by its unique identifier.
     /// </summary>
     /// <typeparam name="Tkey">The type of the unique identifier.</typeparam>

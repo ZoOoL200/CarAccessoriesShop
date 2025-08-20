@@ -1,6 +1,14 @@
-@CarAccessoriesShop.Api_HostAddress = http://localhost:5029
+@CarAccessoriesShop.Api_HostAddress = https://localhost:7039
 
 GET {{CarAccessoriesShop.Api_HostAddress}}/weatherforecast/
 Accept: application/json
 
+###
+
+GET {{CarAccessoriesShop.Api_HostAddress}}/api/contact/GetAllContact
+
+###
+
+GET {{CarAccessoriesShop.Api_HostAddress}}/api/contact/GetPersonContacts/{personId}
+Accept: application/json
 ###

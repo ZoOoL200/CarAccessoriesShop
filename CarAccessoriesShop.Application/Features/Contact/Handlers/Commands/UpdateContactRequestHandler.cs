@@ -1,42 +1,42 @@
 ﻿using AutoMapper;
-using CarAccessoriesShop.Application.DTOs.Contact;
-using CarAccessoriesShop.Application.DTOs.Contact.Validtors;
+using CarAccessoriesShop.Application.DTOs.Contact.QueryDtos;
 using CarAccessoriesShop.Application.Exceptions;
 using CarAccessoriesShop.Application.Features.Contact.Requests.Commands;
 using CarAccessoriesShop.Application.Presistences.UnitofWork;
+using CarAccessoriesShop.Domain.Entity.HR;
 using MediatR;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace CarAccessoriesShop.Application.Features.Contact.Handlers.Commands;
 
-public class UpdateContactRequestHandler(IUnitofWork unitofWork, IMapper mapper) : IRequestHandler<UpdateContactRequest, RequestContactDto>
+public class UpdateContactRequestHandler(IUnitofWork unitofWork, IMapper mapper) : IRequestHandler<UpdateContactRequest, ShowContactDto>
 {
-     public async Task<RequestContactDto> Handle(UpdateContactRequest request, CancellationToken cancellationToken)
+     public async Task<ShowContactDto> Handle(UpdateContactRequest request, CancellationToken cancellationToken)
      {
+        // Attempt to retrieve the existing contact by ID and update it
+        var contact = await unitofWork.ContactRepo.GetByIdAsync(request.ContactDto.Id) 
+            ?? throw new NotFoundException(nameof(Contact), request.ContactDto.Id);
 
-        // Map the request data to a domain entity
-        var contactEntity = mapper.Map<CarAccessoriesShop.Domain.Entity.HR.Contact>(request.ContactDto);
 
         // Attempt to retrieve the country by key and set the CountryID
-        var country = await unitofWork.CountryKeyRepo.FindRowBy(x => x.Key == request.ContactDto.Key);
-        contactEntity.CountryID = country.Id;
+        var country = await unitofWork.CountryKeyRepo.FindRowBy(x => x.Key == request.ContactDto.Key)
+            ?? throw new NotFoundException(nameof(CountryKey), request.ContactDto.Key);
 
-        // Attempt to retrieve the existing contact by ID and update it
-        var contact = await unitofWork.ContactRepo.GetByIdAsync(contactEntity.Id);
-        mapper.Map(contactEntity, contact);
+        contact!.CountryID = country.Id;
+
+        // Map the request DTO to the contact entity
+        mapper.Map(request.ContactDto, contact);
         await unitofWork.SaveChangesAsync(cancellationToken);
 
         // Retrieve the updated contact entity with related data
-        var returnedContact = await unitofWork.ContactRepo.FindRowBy(X => X.Id == contactEntity.Id, x => x.Country, x => x.Person);
-        return mapper.Map<RequestContactDto>(returnedContact);
+        var returnedContact = await unitofWork.ContactRepo.FindRowBy(X => X.Id == contact.Id, x => x.Country, x => x.Person);
+        return mapper.Map<ShowContactDto>(returnedContact);
     }
 }
 
-public class UpdateListContactRequestHandler(IUnitofWork unitofWork, IMapper mapper) : IRequestHandler<UpdateListContactRequest, List<RequestContactDto>>
+public class UpdateListContactRequestHandler(IUnitofWork unitofWork, IMapper mapper) : IRequestHandler<UpdateListContactRequest, List<ShowContactDto>>
 {
 
-    public async Task<List<RequestContactDto>> Handle(UpdateListContactRequest request, CancellationToken cancellationToken)
+    public async Task<List<ShowContactDto>> Handle(UpdateListContactRequest request, CancellationToken cancellationToken)
     {
         // Create a list to hold the contact entities
         var keys = request.Contacts.Select(x => x.Key).Distinct().ToList();
@@ -45,20 +45,27 @@ public class UpdateListContactRequestHandler(IUnitofWork unitofWork, IMapper map
         var countries = await unitofWork.CountryKeyRepo.FindMultiRowsBy(c => keys.Contains(c.Key));
         var countriesDic = countries.ToDictionary(c => c.Key, c => c.Id);
 
+        // Retrieve existing contacts from the database based on the IDs in the request and create a dictionary for quick access
+        var existingContacts = await unitofWork.ContactRepo.FindMultiRowsBy(c => request.Contacts.Select(x => x.Id).Contains(c.Id));
+        var ContactsDic = existingContacts.ToDictionary(c => c.Id, c => c);
+
         // Update each contact entity with the corresponding CountryID
         foreach (var contact in request.Contacts)
         {
-            var contactEntity = mapper.Map<Domain.Entity.HR.Contact>(contact);
-            contactEntity.CountryID = countriesDic[contact.Key!];
-            var existingContact = await unitofWork.ContactRepo.GetByIdAsync(contactEntity.Id );
+            if (!ContactsDic.TryGetValue(contact.Id, out var existingContact))
+                throw new NotFoundException(nameof(Contact), contact.Id);
 
-            mapper.Map(contactEntity, existingContact);
+            if (!countriesDic.TryGetValue(contact.Key!, out var countryId))
+                throw new NotFoundException(nameof(CountryKey), contact.Key);
+
+            existingContact.CountryID = countryId;
+            mapper.Map(contact, existingContact);
         }
         // Save changes to the database
         await unitofWork.SaveChangesAsync(cancellationToken);
         var ids = request.Contacts.Select(c => c.Id).ToList();
         var returendContact = await unitofWork.ContactRepo.FindMultiRowsBy(x => ids.Contains(x.Id), x => x.Country, x => x.Person);
-        return mapper.Map<List<RequestContactDto>>(returendContact);
+        return mapper.Map<List<ShowContactDto>>(returendContact);
 
     }
 }
