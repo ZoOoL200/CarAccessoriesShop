@@ -24,7 +24,7 @@ public class Product
 
     // Navigation properties
     public Category Category { get; set; } = default!;
-    public ICollection<PurchaseDetail> PurchaseDetails { get; set; } = new List<PurchaseDetail>();
-    public ICollection<ProductStock> ProductStocks { get; set; } = new List<ProductStock>();
-    public ICollection<SalesDetail> SalesDetails { get; set; } = new List<SalesDetail>();
+    public ICollection<PurchaseDetail> PurchaseDetails { get; set; } = [];
+    public ICollection<ProductStock> ProductStocks { get; set; } = [];
+    public ICollection<SalesDetail> SalesDetails { get; set; } = [];
 }

@@ -21,7 +21,11 @@ internal class SupplierProfile : Profile
             .ForMember(des=> des.Id , opt=> opt.Ignore())
             .ForMember(des => des.PersonContactID, opt => opt.Ignore())
             .ForMember(des => des.Person, opt => opt.Ignore())
-            .ForMember(des => des.PurchaseInvoices, opt => opt.Ignore());
+            .ForMember(des => des.PurchaseInvoices, opt => opt.Ignore())
+            .ForMember(des=> des.Address, opt=>{
+                opt.MapFrom((src, des) => src.Address == null ? des.Address :
+            string.IsNullOrWhiteSpace(src.Address) ? null : src.Address);
+            });
 
         // Map From Supplier to SupplierDto
         CreateMap<Supplier, SupplierDto>();
