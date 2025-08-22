@@ -22,6 +22,7 @@ internal class SupplierProfile : Profile
             .ForMember(des => des.PersonContactID, opt => opt.Ignore())
             .ForMember(des => des.Person, opt => opt.Ignore())
             .ForMember(des => des.PurchaseInvoices, opt => opt.Ignore())
+            .ForMember(des=> des.SupplierName, opt=> opt.MapFrom((src, des) => src.SupplierName ?? des.SupplierName))
             .ForMember(des=> des.Address, opt=>{
                 opt.MapFrom((src, des) => src.Address == null ? des.Address :
             string.IsNullOrWhiteSpace(src.Address) ? null : src.Address);

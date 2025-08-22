@@ -3,14 +3,14 @@ using CarAccessoriesShop.Application.Presistences.UnitofWork;
 using CarAccessoriesShop.Domain.Entity.HR;
 using CarAccessoriesShop.Domain.Entity.Main;
 using CarAccessoriesShop.Infrastucture.Persistence;
-using MarCarAccessoriesShopket.Domain.Entity.Main;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace CarAccessoriesShop.Infrastucture.UnitofWorkPattren;
 
 internal class UnitofWork(AppDbContext context, Lazy<IGeneralRepository<Contact>> contactRepo , Lazy<IGeneralRepository<CountryKey>> countryKeyRepo ,
     Lazy<IGeneralRepository<Supplier>> supplierRepo, Lazy<IGeneralRepository<Person>> personRepo 
-    , Lazy<IGeneralRepository<Branch>> branchRepo, Lazy<IGeneralRepository<Product>> productRepo, Lazy<IGeneralRepository<Category>> categoryRepo) : IUnitofWork
+    , Lazy<IGeneralRepository<Branch>> branchRepo, Lazy<IGeneralRepository<Product>> productRepo, Lazy<IGeneralRepository<Category>> categoryRepo
+    , Lazy<IGeneralRepository<Inventory>> inventoryRepo) : IUnitofWork
 {
     private IDbContextTransaction? transaction;
 
@@ -27,6 +27,8 @@ internal class UnitofWork(AppDbContext context, Lazy<IGeneralRepository<Contact>
     public IGeneralRepository<Category> CategoryRepo => categoryRepo.Value;
 
     public IGeneralRepository<Product> ProductRepo => productRepo.Value;
+
+    public IGeneralRepository<Inventory> InventoryRepo => inventoryRepo.Value;
 
 
     //Methods

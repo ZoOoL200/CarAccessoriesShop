@@ -9,6 +9,8 @@ namespace CarAccessoriesShop.Application.DTOs.Branch.Validators
         {
             RuleFor(x => x.Id)
                 .NotEmpty()
+                .WithMessage("Branch ID is required.")
+                .NotNull()
                 .WithMessage("Branch ID is required.");
             RuleFor(x => x.Title)
                 .NotEmpty()

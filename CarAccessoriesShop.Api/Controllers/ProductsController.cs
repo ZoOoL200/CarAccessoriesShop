@@ -16,7 +16,7 @@ public class ProductsController(IMediator mediator) : ControllerBase
     [Route("GetAllProducts")]
     public async Task<IActionResult> GetAllProducts()
     {
-        var result = await mediator.Send(new GetAllProductsRequest());
+        var result = await mediator.Send(new GetAllProductRequest());
         return Ok(result);
     }
 

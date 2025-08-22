@@ -1,7 +1,6 @@
 ﻿using CarAccessoriesShop.Application.Presistences.Contracts.Repos;
 using CarAccessoriesShop.Domain.Entity.HR;
 using CarAccessoriesShop.Domain.Entity.Main;
-using MarCarAccessoriesShopket.Domain.Entity.Main;
 
 namespace CarAccessoriesShop.Application.Presistences.UnitofWork;
 /// <summary>
@@ -40,6 +39,10 @@ public interface IUnitofWork : IDisposable
     /// Gets the repository for managing <see cref="Product"/> entities.
     /// </summary>
     public IGeneralRepository<Product> ProductRepo { get; }
+    /// <summary>
+    /// Gets the repository for managing <see cref="Inventory"/> entities.
+    /// </summary>
+    public IGeneralRepository<Inventory> InventoryRepo { get; }
 
     /// <summary>
     /// Asynchronously saves all changes made in the current context to the database.

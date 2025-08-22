@@ -20,6 +20,7 @@ namespace CarAccessoriesShop.Application.Profiles
                 .ForMember(dest => dest.Inventories, opt => opt.Ignore())
                 .ForMember(dest => dest.PurchaseInvoices, opt => opt.Ignore())
                 .ForMember(dest => dest.SalesInvoices, opt => opt.Ignore())
+                .ForMember(dest => dest.Title, opt => opt.MapFrom((src, des) => src.Title ?? des.Title))
                 .ForMember(dest => dest.Location, opt =>
                 {
                     opt.MapFrom((src, dest) =>

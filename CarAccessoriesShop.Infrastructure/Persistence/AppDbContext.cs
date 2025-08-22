@@ -1,7 +1,6 @@
 ﻿using CarAccessoriesShop.Domain.Entity.HR;
 using CarAccessoriesShop.Domain.Entity.Main;
 using CarAccessoriesShop.Domain.Entity.Operations;
-using MarCarAccessoriesShopket.Domain.Entity.Main;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 

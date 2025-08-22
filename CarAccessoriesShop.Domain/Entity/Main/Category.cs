@@ -1,8 +1,7 @@
-﻿using CarAccessoriesShop.Domain.Entity.Main;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace MarCarAccessoriesShopket.Domain.Entity.Main;
+namespace CarAccessoriesShop.Domain.Entity.Main;
 
 [Index(nameof(Title), IsUnique = true)]
 public class Category
@@ -16,5 +15,5 @@ public class Category
 
     public string? Description { get; set; }
     // Navigation property for related products
-    public ICollection<Product> Products { get; set; } = new List<Product>();
+    public ICollection<Product> Products { get; set; } = [];
 }
