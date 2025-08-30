@@ -1,7 +1,8 @@
 ﻿using CarAccessoriesShop.Domain.Entity.HR;
-using CarAccessoriesShop.Infrastucture.Persistence;
+using CarAccessoriesShop.Infrastructure.Persistence;
+using CarAccessoriesShop.Infrastucture.Seeders;
 
-namespace CarAccessoriesShop.Infrastucture.Seeders;
+namespace CarAccessoriesShop.Infrastructure.Seeders;
 /// <summary>
 /// Seeds the database with country key data if no data exists.
 /// </summary>

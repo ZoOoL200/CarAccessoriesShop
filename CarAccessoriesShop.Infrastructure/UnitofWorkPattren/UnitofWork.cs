@@ -2,7 +2,7 @@
 using CarAccessoriesShop.Application.Presistences.UnitofWork;
 using CarAccessoriesShop.Domain.Entity.HR;
 using CarAccessoriesShop.Domain.Entity.Main;
-using CarAccessoriesShop.Infrastucture.Persistence;
+using CarAccessoriesShop.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace CarAccessoriesShop.Infrastucture.UnitofWorkPattren;

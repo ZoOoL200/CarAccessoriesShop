@@ -23,6 +23,8 @@ public class PurchaseInvoice
 
     public decimal TotalAmount { get; private set; } 
 
+    public Guid? DoneBy { get; set; }
+
     // Navigation properties
     public Supplier Supplier { get; set; } = default!;
     public Branch Branch { get; set; } = default!;

@@ -1,7 +1,9 @@
 ﻿using CarAccessoriesShop.Application.Presistences.Contracts.Repos;
 using CarAccessoriesShop.Application.Presistences.UnitofWork;
+using CarAccessoriesShop.Domain.Entity.Main;
+using CarAccessoriesShop.Infrastructure.Persistence;
 using CarAccessoriesShop.Infrastructure.Repositories;
-using CarAccessoriesShop.Infrastucture.Persistence;
+using CarAccessoriesShop.Infrastructure.Seeders;
 using CarAccessoriesShop.Infrastucture.Seeders;
 using CarAccessoriesShop.Infrastucture.UnitofWorkPattren;
 using Microsoft.EntityFrameworkCore;
@@ -27,5 +29,7 @@ public static class ServiceCollectionsExtension
 
         // Register other services, repositories, etc.
         services.AddScoped<ICountryKeySeeder, CountryKeySeeder>();
+        services.AddScoped<IBranchSeeder, BranchSeeder>();
+
     }
 }

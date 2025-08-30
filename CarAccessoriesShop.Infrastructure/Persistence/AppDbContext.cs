@@ -1,12 +1,13 @@
 ﻿using CarAccessoriesShop.Domain.Entity.HR;
 using CarAccessoriesShop.Domain.Entity.Main;
 using CarAccessoriesShop.Domain.Entity.Operations;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace CarAccessoriesShop.Infrastucture.Persistence;
+namespace CarAccessoriesShop.Infrastructure.Persistence;
 
-internal class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+internal class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<User>(options)
 {
     // Define DbSets for your entities
     internal DbSet<Branch> Branches { get; set; } 
@@ -22,6 +23,8 @@ internal class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(
     internal DbSet<SalesInvoice> SalesInvoices { get; set; }
     internal DbSet<SalesDetail> SalesDetails { get; set; }
     internal DbSet<Person> Persons { get; set; }
+    internal DbSet<ProductTransfer> ProductsTransfers { get; set; }
+    internal DbSet<ProductTransferDetail> ProductTransferDetails { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -48,7 +51,6 @@ internal class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(
         modelBuilder.Entity<PurchaseDetail>().Property(x => x.Quantity).HasDefaultValue(1);
         modelBuilder.Entity<PurchaseDetail>().Property(x => x.UnitPrice).HasDefaultValue(0.0m);
         modelBuilder.Entity<PurchaseDetail>().Property(x => x.TotalPrice).HasComputedColumnSql("[Quantity] * [UnitPrice]", stored: true);
-        modelBuilder.Entity<PurchaseDetail>().Property(x => x.Status).HasDefaultValue(false);
 
         //ProductStock Table Configuration
         modelBuilder.Entity<ProductStock>().Property(x=>x.DefaultSalePrice).HasComputedColumnSql("[DefaultCostPrice] * 1.15 ", stored: true);
@@ -66,7 +68,14 @@ internal class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(
         modelBuilder.Entity<SalesDetail>().ToTable(x => x.HasCheckConstraint("CK_SalesDetail_DiscountRange", "([Discount] <= ([UnitPrice] * [Quantity] * 0.05)) AND ([Discount] >= 0) "));
         modelBuilder.Entity<SalesDetail>().Property(x => x.TotalPrice).HasComputedColumnSql("([UnitPrice] * [Quantity]) - [Discount]", stored: true);
 
+        // ProductTransfer Table Configuration
+        modelBuilder.Entity<ProductTransfer>().Property(x => x.TransferDate).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd()
+            .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
 
+        // ProductTransferDetails Table Configuration
+        modelBuilder.Entity<ProductTransferDetail>().ToTable(x => x.HasCheckConstraint("CK_ProductTransferDetail_Quantity", "[Quantity] > 0"));
+        modelBuilder.Entity<ProductTransferDetail>().Property(x => x.Quantity).HasDefaultValue(1);
+        modelBuilder.Entity<ProductTransferDetail>().Property(x => x.Approved).HasDefaultValue(false);
     }
 
 }

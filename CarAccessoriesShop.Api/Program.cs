@@ -1,5 +1,6 @@
 using CarAccessoriesShop.Api.MiddelWare;
 using CarAccessoriesShop.Application.Extensions;
+using CarAccessoriesShop.Infrastructure.Seeders;
 using CarAccessoriesShop.Infrastucture.Extension;
 using CarAccessoriesShop.Infrastucture.Seeders;
 
@@ -22,6 +23,7 @@ var app = builder.Build();
 var scop = app.Services.CreateScope();
 var service = scop.ServiceProvider;
 await service.GetRequiredService<ICountryKeySeeder>().SeedAsync();
+await service.GetRequiredService<IBranchSeeder>().SeedAsync();
 
 // Configure the middleware to handle exceptions globally
 app.UseMiddleware<MiddelWareException>();

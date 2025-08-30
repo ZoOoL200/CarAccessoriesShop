@@ -26,4 +26,5 @@ public class Product
     public ICollection<PurchaseDetail> PurchaseDetails { get; set; } = [];
     public ICollection<ProductStock> ProductStocks { get; set; } = [];
     public ICollection<SalesDetail> SalesDetails { get; set; } = [];
+    public ICollection<ProductTransferDetail> ProductTransferDetails { get; set; } = [];
 }

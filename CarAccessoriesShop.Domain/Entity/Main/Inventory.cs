@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CarAccessoriesShop.Domain.Entity.Operations;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -21,4 +22,7 @@ public class Inventory
     // Navigation properties
     public Branch Branch { get; set; } = default!;
     public ICollection<ProductStock> ProductStocks { get; set; } = [];
+
+    //public ICollection<ProductTransfer> ProductTransfersFrom { get; set; } = [];
+    //public ICollection<ProductTransfer> ProductTransfersTo { get; set; } = [];
 }

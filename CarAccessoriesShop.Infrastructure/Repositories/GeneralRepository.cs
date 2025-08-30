@@ -1,6 +1,6 @@
 ﻿using CarAccessoriesShop.Application.Exceptions;
 using CarAccessoriesShop.Application.Presistences.Contracts.Repos;
-using CarAccessoriesShop.Infrastucture.Persistence;
+using CarAccessoriesShop.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
